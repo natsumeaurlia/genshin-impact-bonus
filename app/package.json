@@ -1,0 +1,30 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "main": "src/main.ts",
+  "scripts": {
+    "start": "ts-node -r dotenv/config src/main.ts",
+    "generate": "ts-node generator.ts",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.32.1",
+    "dotenv": "^16.0.3",
+    "typescript": "^5.0.3"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.312.0",
+    "axios": "^1.3.5",
+    "form-data": "^4.0.0",
+    "playwright": "^1.32.2",
+    "playwright-core": "^1.32.3",
+    "ts-node": "^10.9.1"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "description": ""
+}

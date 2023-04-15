@@ -1,0 +1,13 @@
+node_modules/
+/test-results/
+/playwright-report/
+/playwright/.cache/
+.env
+.env.production
+storage/**
+!storage/.gitkeep
+screenshots/**
+!screenshots/.gitkeep
+dist/**
+!dist/.gitkeep
+state.json
