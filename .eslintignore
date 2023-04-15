@@ -1,0 +1,12 @@
+*.d.ts
+node_modules
+dist
+__tests__
+jest.config.ts
+openapi
+cdk.out
+tests
+test
+*.spec
+*.test
+**config**
