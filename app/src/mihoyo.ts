@@ -93,7 +93,12 @@ export const accessGenshinImpactDailyAndClaimReward = async (
 
   await acceptCookies(page);
 
-  await page.getByText('さらに表示').click();
+  // さらに表示があればクリック
+  const showMore = page.getByText('さらに表示');
+  if (await showMore.count()) {
+    await showMore.click();
+  }
+
   await page.screenshot({ path: GENSHIN_IMPACT_DAILY_TOP_IMAGE });
   await lineNotify(
     '原神のログインボーナス受け取り処理を開始',
