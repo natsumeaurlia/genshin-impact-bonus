@@ -166,27 +166,24 @@ export class HoyoLoginStack extends cdk.Stack {
       logging: LogDrivers.awsLogs({
         streamPrefix: 'hoyo-login',
         logGroup,
+        datetimeFormat: '%Y-%m-%d %H:%M:%S',
       }),
     });
     taskDefinition.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
-    const scheduleTask = new ScheduledFargateTask(
-      this,
-      'amazon-linux-sleep-task',
-      {
-        schedule: Schedule.cron({
-          // tokyoはUTC+9なので、UTCに合わせて9時間引く
-          minute: '0',
-          hour: '0',
-        }),
-        cluster,
-        platformVersion: FargatePlatformVersion.LATEST,
-        scheduledFargateTaskDefinitionOptions: {
-          taskDefinition,
-        },
-        vpc,
-        subnetSelection: { subnetType: SubnetType.PUBLIC },
-      }
-    );
+    const scheduleTask = new ScheduledFargateTask(this, 'hoyologinDailyTask', {
+      schedule: Schedule.cron({
+        // tokyoはUTC+9なので、UTCに合わせて9時間引く
+        minute: '0',
+        hour: '0',
+      }),
+      cluster,
+      platformVersion: FargatePlatformVersion.LATEST,
+      scheduledFargateTaskDefinitionOptions: {
+        taskDefinition,
+      },
+      vpc,
+      subnetSelection: { subnetType: SubnetType.PUBLIC },
+    });
   }
 }
