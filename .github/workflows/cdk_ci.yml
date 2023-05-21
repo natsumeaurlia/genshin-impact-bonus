@@ -5,6 +5,9 @@ on:
     paths:
       - 'infrastructure/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
 jobs:
   ci:
     permissions:
