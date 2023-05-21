@@ -60,7 +60,7 @@ jobs:
 
       - name: deploy
         working-directory: infrastructure
-        run: pnpm run deploy
+        run: pnpm run cdk deploy
         env:
           AWS_DEFAULT_REGION: 'ap-northeast-1'
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
