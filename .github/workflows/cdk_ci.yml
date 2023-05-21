@@ -48,6 +48,7 @@ jobs:
         working-directory: app
         run: |
           echo ${{ secrets.ENV_PROD }} > .env.production
+          cat .env.production
 
       - name: Test
         working-directory: infrastructure
