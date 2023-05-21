@@ -1,4 +1,4 @@
-name: CDK Change Commenter
+name: CDK Deploy
 
 on:
   push:
@@ -6,6 +6,9 @@ on:
       - master
     paths:
       - 'infrastructure/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   deploy:
