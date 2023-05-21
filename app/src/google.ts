@@ -32,7 +32,7 @@ async function inputEmail(page: Page) {
 
 async function inputPassword(page: Page) {
   await page.waitForSelector('input[type="password"]');
-  console.log(GOOGLE_PASS);
+  console.info(GOOGLE_PASS);
   await page.fill('input[type="password"]', GOOGLE_PASS);
 
   await page.screenshot({ path: INPUT_PASSWORD_IMAGE });
@@ -68,7 +68,7 @@ export const setUpGoogleAuthenticate = async (): Promise<SetUpResult> => {
 
   // ログインできてるなら終わる
   if (page.url().includes(GOOGLE_AUTHENTICATED_DOMAIN)) {
-    console.log('login success');
+    console.info('login success');
     await page.context().storageState({ path: STORAGE_STATE_PATH });
     await page.close();
     return { browser, context };

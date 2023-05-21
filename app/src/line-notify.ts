@@ -28,7 +28,7 @@ export const lineNotify = async (message: string, imagePath?: string) => {
       );
     }
 
-    console.log('Line Notify message was sent successfully!');
+    console.info('Line Notify message was sent successfully!');
   } catch (err) {
     console.error(err);
   }

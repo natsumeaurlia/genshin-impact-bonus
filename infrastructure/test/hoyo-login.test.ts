@@ -1,17 +1,37 @@
-// import * as cdk from 'aws-cdk-lib';
-// import { Template } from 'aws-cdk-lib/assertions';
-// import * as HoyoLogin from '../lib/hoyo-login-stack';
+import { Template } from 'aws-cdk-lib/assertions';
+import { HoyoLoginStack } from '../lib/hoyo-login-stack';
+import * as cdk from 'aws-cdk-lib';
 
-// example test. To run these tests, uncomment this file along with the
-// example resource in lib/hoyo-login-stack.ts
-// test('SQS Queue Created', () => {
-// //   const app = new cdk.App();
-// //     // WHEN
-// //   const stack = new HoyoLogin.HoyoLoginStack(app, 'MyTestStack');
-// //     // THEN
-// //   const template = Template.fromStack(stack);
+test('VPC Created', () => {
+  const app = new cdk.App();
+  const stack = new HoyoLoginStack(app, 'MyTestStack');
+  const template = Template.fromStack(stack);
+  template.hasResource('AWS::EC2::VPC', 1);
+});
 
-// //   template.hasResourceProperties('AWS::SQS::Queue', {
-// //     VisibilityTimeout: 300
-// //   });
-// });
+test('S3 Bucket Created', () => {
+  const app = new cdk.App();
+  const stack = new HoyoLoginStack(app, 'MyTestStack');
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::S3::Bucket', {
+    BucketName: 'hoyo-login-state-bucket',
+  });
+});
+
+test('ECS Cluster Created', () => {
+  const app = new cdk.App();
+  const stack = new HoyoLoginStack(app, 'MyTestStack');
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::ECS::Cluster', {
+    ClusterName: 'hoyo-login-cluster',
+  });
+});
+
+test('Scheduled Fargate Task Created', () => {
+  const app = new cdk.App();
+  const stack = new HoyoLoginStack(app, 'MyTestStack');
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'cron(0 0 * * ? *)',
+  });
+});

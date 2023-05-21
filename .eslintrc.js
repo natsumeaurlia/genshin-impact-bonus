@@ -26,6 +26,7 @@ module.exports = {
             "variables": true,
             "allowNamedExports": true
         }],
+        "no-console": ["warn", { "allow": ["info", "warn", "error"] }],
         "no-new": "off",
     }
 }

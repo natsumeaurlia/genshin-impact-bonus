@@ -18,7 +18,7 @@ import { accessGenshinImpactDailyAndClaimReward } from './mihoyo';
     await accessGenshinImpactDailyAndClaimReward(context);
     await saveStateData();
   } catch (e) {
-    console.log(e);
+    console.info(e);
   } finally {
     if (context) {
       await context.close();
