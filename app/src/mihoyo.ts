@@ -22,7 +22,7 @@ const GENSHIN_IMPACT_DAILY_COMPLETE_IMAGE = path.resolve(
 
 const checkIfLoggedIn = async (page: Page) => {
   // ログインダイアログが表示されているか
-  const showLoginDialog = await page.locator('.login-form-container').count();
+  const showLoginDialog = await page.locator('.infoin-form-container').count();
 
   if (showLoginDialog) {
     return false;
@@ -81,7 +81,7 @@ export const accessGenshinImpactDailyAndClaimReward = async (
 ) => {
   const page = await context.newPage();
   await page.goto(GENSHIN_IMPACT_DAILY_PAGE, { timeout: 300000 });
-  console.log('原神デイリーページにアクセスしました');
+  console.info('原神デイリーページにアクセスしました');
   await page.waitForLoadState('networkidle');
   await page.screenshot({ path: GENSHIN_IMPACT_DAILY_TOP_IMAGE });
 
@@ -124,7 +124,7 @@ export const accessGenshinImpactDailyAndClaimReward = async (
       GENSHIN_IMPACT_DAILY_COMPLETE_IMAGE
     );
   } catch (e) {
-    console.log('ログインボーナス受け取り処理に失敗しました', e);
+    console.info('ログインボーナス受け取り処理に失敗しました', e);
     await lineNotify('原神のログインボーナス受け取りに失敗しました');
   }
   await context.storageState({ path: STORAGE_STATE_PATH });
