@@ -43,7 +43,9 @@ jobs:
 
       - name: Test
         working-directory: infrastructure
-        run: pnpm run test
+        run: |
+          touch .env.production
+          pnpm run test
 
       - name: diff
         working-directory: infrastructure
