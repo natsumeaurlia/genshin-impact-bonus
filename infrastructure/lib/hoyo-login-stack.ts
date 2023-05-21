@@ -9,16 +9,16 @@ import {
   FargateTaskDefinition,
   LogDrivers,
   OperatingSystemFamily,
-  Secret,
+  Secret as EcsSecret,
 } from 'aws-cdk-lib/aws-ecs';
 import { ScheduledFargateTask } from 'aws-cdk-lib/aws-ecs-patterns';
 import { Schedule } from 'aws-cdk-lib/aws-events';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
 import { readFileSync } from 'fs';
-import { ParameterDataType, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import {
   Effect,
@@ -48,20 +48,17 @@ export class HoyoLoginStack extends cdk.Stack {
     const envConfig = dotenv.parse(
       readFileSync(path.join(__dirname, '..', '..', 'app', '.env.production'))
     );
-    const keys: StringParameter[] = [];
-
     // Create the secrets
-    const secrets: { [key: string]: Secret } = {};
-    Object.keys(envConfig).forEach((key) => {
-      const value = envConfig[key];
-      const param = new StringParameter(this, key, {
-        parameterName: `/hoyo-login/${key}`,
-        stringValue: value,
-        dataType: ParameterDataType.TEXT,
+    const secrets: { [key: string]: EcsSecret } = {};
+
+    Object.keys(envConfig).forEach((key, index) => {
+      const value = cdk.SecretValue.unsafePlainText(envConfig[key]);
+      const secretManager = new Secret(this, `Secret${index}`, {
+        secretName: `hoyo-login${key}`,
+        secretStringValue: value,
       });
-      param.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
-      const secret = Secret.fromSsmParameter(param);
-      secrets[key] = secret;
+      secrets[key] = EcsSecret.fromSecretsManager(secretManager);
+      secretManager.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
     });
 
     // S3
