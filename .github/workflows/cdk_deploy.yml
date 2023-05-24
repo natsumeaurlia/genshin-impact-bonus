@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - 'infrastructure/**'
   workflow_dispatch:
 
 concurrency:
@@ -48,6 +46,19 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: create .env.production
+        working-directory: app
+        run: |
+          cat > .env.production <<EOF
+          GOOGLE_EMAIL=${{ secrets.GOOGLE_EMAIL }}
+          GOOGLE_PASS=${{ secrets.GOOGLE_PASS }}
+          LINE_ACCESS_TOKEN=${{ secrets.LINE_ACCESS_TOKEN }}
+          EOF
+
+      - name: Test
+        working-directory: infrastructure
+        run: pnpm run test
 
       - name: deploy
         working-directory: infrastructure
