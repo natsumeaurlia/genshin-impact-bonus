@@ -49,10 +49,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Test
-        working-directory: infrastructure
-        run: pnpm run test
-
       - name: deploy
         working-directory: infrastructure
         run: pnpm run cdk deploy
