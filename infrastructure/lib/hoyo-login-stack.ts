@@ -183,6 +183,9 @@ export class HoyoLoginStack extends cdk.Stack {
       cluster,
       taskDefinition,
       launchTarget: new EcsFargateLaunchTarget(),
+      subnets: {
+        subnetType: SubnetType.PUBLIC,
+      },
     });
 
     ecsRunTask.addRetry({
