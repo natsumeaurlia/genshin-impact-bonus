@@ -15,7 +15,7 @@
 		"lint-staged": "^13.2.2"
 	},
 	"lint-staged": {
-		"*": [
+		"*.{js,ts,jsx,tsx}": [
 			"npm run lint"
 		]
 	}

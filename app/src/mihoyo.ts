@@ -82,7 +82,7 @@ export const accessGenshinImpactDailyAndClaimReward = async (
   const page = await context.newPage();
   await page.goto(GENSHIN_IMPACT_DAILY_PAGE, { timeout: 300000 });
   console.info('原神デイリーページにアクセスしました');
-  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(5000);
   await page.screenshot({ path: GENSHIN_IMPACT_DAILY_TOP_IMAGE });
 
   await closeGuideIfVisible(page);
