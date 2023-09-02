@@ -19,13 +19,6 @@ import { accessGenshinImpactDailyAndClaimReward } from './mihoyo';
     await saveStateData();
   } catch (e) {
     console.info(e);
-  } finally {
-    if (context) {
-      await context.close();
-    }
-    if (browser) {
-      await browser.close();
-    }
-    await clearDirectory(SCREEN_SHOT_PATH);
+    process.exit(1);
   }
 })();

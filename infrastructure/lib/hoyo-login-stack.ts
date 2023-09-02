@@ -12,7 +12,7 @@ import {
   Secret as EcsSecret,
 } from 'aws-cdk-lib/aws-ecs';
 import { ScheduledFargateTask } from 'aws-cdk-lib/aws-ecs-patterns';
-import { Schedule } from 'aws-cdk-lib/aws-events';
+import { Rule, Schedule } from 'aws-cdk-lib/aws-events';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
@@ -28,6 +28,16 @@ import {
   Role,
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
+import {
+  EcsFargateLaunchTarget,
+  EcsRunTask,
+} from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import {
+  IntegrationPattern,
+  ServiceIntegrationPattern,
+  StateMachine,
+} from 'aws-cdk-lib/aws-stepfunctions';
+import { SfnStateMachine } from 'aws-cdk-lib/aws-events-targets';
 
 export class HoyoLoginStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -168,19 +178,33 @@ export class HoyoLoginStack extends cdk.Stack {
     });
     taskDefinition.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
-    const scheduleTask = new ScheduledFargateTask(this, 'hoyologinDailyTask', {
+    const ecsRunTask = new EcsRunTask(this, 'EcsRunTask', {
+      integrationPattern: IntegrationPattern.RUN_JOB,
+      cluster,
+      taskDefinition,
+      launchTarget: new EcsFargateLaunchTarget(),
+    });
+
+    ecsRunTask.addRetry({
+      maxAttempts: 3,
+      interval: cdk.Duration.seconds(10),
+      backoffRate: 2.0, // リトライ間隔の増加率
+      errors: ['States.ALL'], // すべてのエラーでリトライを行います
+    });
+
+    // Step Functions の State Machine を定義
+    const stateMachine = new StateMachine(this, 'StateMachine', {
+      definition: ecsRunTask,
+      timeout: cdk.Duration.hours(1),
+    });
+
+    // AWS EventBridge (CloudWatch Events) での定期実行の設定
+    new Rule(this, 'ScheduleRule', {
       schedule: Schedule.cron({
-        // tokyoはUTC+9なので、UTCに合わせて9時間引く
         minute: '0',
         hour: '0',
       }),
-      cluster,
-      platformVersion: FargatePlatformVersion.LATEST,
-      scheduledFargateTaskDefinitionOptions: {
-        taskDefinition,
-      },
-      vpc,
-      subnetSelection: { subnetType: SubnetType.PUBLIC },
+      targets: [new SfnStateMachine(stateMachine)],
     });
   }
 }
