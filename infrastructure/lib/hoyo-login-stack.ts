@@ -34,6 +34,7 @@ import {
 } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import {
   IntegrationPattern,
+  LogLevel,
   ServiceIntegrationPattern,
   StateMachine,
 } from 'aws-cdk-lib/aws-stepfunctions';
@@ -186,6 +187,7 @@ export class HoyoLoginStack extends cdk.Stack {
       subnets: {
         subnetType: SubnetType.PUBLIC,
       },
+      assignPublicIp: true,
     });
 
     ecsRunTask.addRetry({
@@ -199,6 +201,11 @@ export class HoyoLoginStack extends cdk.Stack {
     const stateMachine = new StateMachine(this, 'StateMachine', {
       definition: ecsRunTask,
       timeout: cdk.Duration.hours(1),
+      logs: {
+        destination: logGroup,
+        level: LogLevel.ERROR,
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     // AWS EventBridge (CloudWatch Events) での定期実行の設定
