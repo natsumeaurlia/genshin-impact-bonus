@@ -21,4 +21,5 @@ import { accessGenshinImpactDailyAndClaimReward } from './mihoyo';
     console.info(e);
     process.exit(1);
   }
+  process.exit(0);
 })();
