@@ -7,7 +7,6 @@ import {
   STORAGE_STATE_PATH,
 } from './constant';
 import { lineNotify } from './line-notify';
-import { checkFileExists } from './utils';
 
 const GOOGLE_EMAIL = process.env.GOOGLE_EMAIL || '';
 const GOOGLE_PASS = process.env.GOOGLE_PASS || '';
@@ -16,11 +15,6 @@ const AUTH_IMAGE = path.join(SCREEN_SHOT_PATH, 'auth.png');
 const INPUT_EMAIL_IMAGE = path.join(SCREEN_SHOT_PATH, 'email.png');
 const INPUT_PASSWORD_IMAGE = path.join(SCREEN_SHOT_PATH, 'password.png');
 const LOGED_IN_IMAGE = path.join(SCREEN_SHOT_PATH, 'login.png');
-
-interface SetUpResult {
-  browser: Browser;
-  context: BrowserContext;
-}
 
 async function inputEmail(page: Page) {
   await page.fill('input[type="email"]', GOOGLE_EMAIL);
@@ -40,7 +34,17 @@ async function inputPassword(page: Page) {
   await page.locator('input[type="password"]').press('Enter');
 }
 
+async function selectAccount(page: Page) {
+  // data-emailを探す
+  await page.waitForSelector(`[data-email="${GOOGLE_EMAIL}"]`);
+  await page.click(`[data-email="${GOOGLE_EMAIL}"]`);
+  await page.waitForTimeout(3000);
+}
+
 async function waitForAuthentication(page: Page) {
+  // GOOGLE_AUTHENTICATED_DOMAINで移動して、リダイレクトされずに画面表示されていたらログイン完了
+  await page.goto(GOOGLE_AUTHENTICATE_URL, { timeout: 300000 });
+  await page.waitForTimeout(5000); // 画面遷移待ち
   await page.waitForURL((url) =>
     url.toString().includes(GOOGLE_AUTHENTICATED_DOMAIN)
   );
@@ -49,15 +53,9 @@ async function waitForAuthentication(page: Page) {
   await lineNotify('ログインしました', LOGED_IN_IMAGE);
 }
 
-export const setUpGoogleAuthenticate = async (): Promise<SetUpResult> => {
-  const stateExist = await checkFileExists(STORAGE_STATE_PATH);
-
-  // firefoxを起動(chromiumだとgoogle認証でセキュリティに引っかかる)
-  const browser = await firefox.launch({ headless: true });
-  const context = await browser.newContext({
-    locale: 'ja',
-    storageState: stateExist ? STORAGE_STATE_PATH : undefined,
-  });
+export const setUpGoogleAuthenticate = async (
+  context: BrowserContext
+): Promise<BrowserContext> => {
   const page = await context.newPage();
 
   // google auth画面に遷移
@@ -65,25 +63,34 @@ export const setUpGoogleAuthenticate = async (): Promise<SetUpResult> => {
   await page.waitForTimeout(5000);
   await page.screenshot({ path: AUTH_IMAGE });
   await lineNotify('Google認証に遷移しました', AUTH_IMAGE);
+  await page.pause();
 
   // ログインできてるなら終わる
   if (page.url().includes(GOOGLE_AUTHENTICATED_DOMAIN)) {
     console.info('login success');
     await page.context().storageState({ path: STORAGE_STATE_PATH });
     await page.close();
-    return { browser, context };
+    return context;
   }
 
   if (!GOOGLE_EMAIL || !GOOGLE_PASS) {
     throw new Error('GOOGLE_EMAIL or GOOGLE_PASS is not set');
   }
 
-  await inputEmail(page);
+  // 画面内に「アカウントの選択」の文字列があるならアカウント選択
+  const accountSelectionText = await page
+    .locator('text=アカウントの選択')
+    .count();
+  if (accountSelectionText > 0) {
+    await selectAccount(page);
+  } else {
+    await inputEmail(page);
+  }
   await inputPassword(page);
   await waitForAuthentication(page);
 
   // 認証情報を保存
   await page.context().storageState({ path: STORAGE_STATE_PATH });
   await page.close();
-  return { browser, context };
+  return context;
 };

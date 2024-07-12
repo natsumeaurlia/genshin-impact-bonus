@@ -8,6 +8,7 @@ storage/**
 !storage/.gitkeep
 screenshots/**
 !screenshots/.gitkeep
+screenshots/*.png
 dist/**
 !dist/.gitkeep
 state.json
