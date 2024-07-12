@@ -1,8 +1,8 @@
 import path from 'path';
 
 export const STATE_FILE_NAME = 'state.json';
-export const SCREEN_SHOT_PATH = path.resolve(__dirname, '..', 'screenshot');
-export const STORAGE_PATH = path.resolve(__dirname, '..', 'storage');
+export const SCREEN_SHOT_PATH = path.join(process.cwd(), 'screenshot');
+export const STORAGE_PATH = path.join(process.cwd(), 'storage');
 export const STORAGE_STATE_PATH = path.resolve(STORAGE_PATH, STATE_FILE_NAME);
 
 /**

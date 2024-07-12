@@ -1,21 +1,25 @@
-import { Browser, BrowserContext } from 'playwright';
+import { firefox } from 'playwright';
 import { setUpGoogleAuthenticate } from './google';
-import { clearDirectory, getStateData, saveStateData } from './utils';
-import { SCREEN_SHOT_PATH } from './constant';
+import { checkFileExists, getStateData, saveStateData } from './utils';
+import { STORAGE_STATE_PATH } from './constant';
 import { accessGenshinImpactDailyAndClaimReward } from './mihoyo';
 
 (async () => {
-  let browser: Browser | undefined;
-  let context: BrowserContext | undefined;
   try {
+    const stateExist = await checkFileExists(STORAGE_STATE_PATH);
+
+    // firefoxを起動(chromiumだとgoogle認証でセキュリティに引っかかる)
+    const browser = await firefox.launch({ headless: false });
+    const context = await browser.newContext({
+      locale: 'ja',
+      storageState: stateExist ? STORAGE_STATE_PATH : undefined,
+    });
     await getStateData();
-    const setUpResult = await setUpGoogleAuthenticate();
-    browser = setUpResult.browser;
-    context = setUpResult.context;
+    const setUpResult = await setUpGoogleAuthenticate(context);
     if (!browser || !context) {
       throw new Error('browser or context is undefined');
     }
-    await accessGenshinImpactDailyAndClaimReward(context);
+    await accessGenshinImpactDailyAndClaimReward(setUpResult);
     await saveStateData();
   } catch (e) {
     console.info(e);
