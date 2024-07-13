@@ -3,13 +3,12 @@ import path from 'path';
 import {
   GOOGLE_AUTHENTICATED_DOMAIN,
   GOOGLE_AUTHENTICATE_URL,
+  GOOGLE_EMAIL,
+  GOOGLE_PASS,
   SCREEN_SHOT_PATH,
   STORAGE_STATE_PATH,
 } from './constant';
 import { lineNotify } from './line-notify';
-
-const GOOGLE_EMAIL = process.env.GOOGLE_EMAIL || '';
-const GOOGLE_PASS = process.env.GOOGLE_PASS || '';
 
 const AUTH_IMAGE = path.join(SCREEN_SHOT_PATH, 'auth.png');
 const INPUT_EMAIL_IMAGE = path.join(SCREEN_SHOT_PATH, 'email.png');

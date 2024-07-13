@@ -17,3 +17,9 @@ export const GOOGLE_AUTHENTICATED_DOMAIN = 'myaccount.google.com';
 
 export const GENSHIN_IMPACT_DAILY_PAGE =
   'https://act.hoyolab.com/ys/event/signin-sea-v3/index.html?act_id=e202102251931481&hyl_auth_required=true&hyl_presentation_style=fullscreen&utm_source=hoyolab&utm_medium=tools&lang=ja-jp';
+
+export const LINE_TOKEN = process.env.LINE_ACCESS_TOKEN || '';
+export const GOOGLE_EMAIL = process.env.GOOGLE_EMAIL || '';
+export const GOOGLE_PASS = process.env.GOOGLE_PASS || '';
+export const { AWS_ACCESS_KEY_ID } = process.env;
+export const { AWS_SECRET_ACCESS_KEY } = process.env;

@@ -1,13 +1,12 @@
 import axios from 'axios';
 import { createReadStream } from 'fs';
 import FormData from 'form-data';
-
-const TOKEN = process.env.LINE_ACCESS_TOKEN || '';
+import { LINE_TOKEN } from './constant';
 
 export const lineNotify = async (message: string, imagePath?: string) => {
   const endpoint = 'https://notify-api.line.me/api/notify';
   const headers = {
-    Authorization: `Bearer ${TOKEN}`,
+    Authorization: `Bearer ${LINE_TOKEN}`,
   };
 
   const payload = new FormData();

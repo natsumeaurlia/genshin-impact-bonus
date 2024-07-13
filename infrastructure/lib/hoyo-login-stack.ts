@@ -57,19 +57,23 @@ export class HoyoLoginStack extends cdk.Stack {
     vpc.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
     const envConfig = dotenv.parse(
-      readFileSync(path.join(__dirname, '..', '..', 'app', '.env.production'))
+      readFileSync(path.join(__dirname, '..', '..', 'app', '.env.example'))
     );
-    // Create the secrets
-    const secrets: { [key: string]: EcsSecret } = {};
+    const secretObjectValue: Record<string, cdk.SecretValue> = {};
+    Object.entries(envConfig).forEach(([key]) => {
+      secretObjectValue[key] = cdk.SecretValue.unsafePlainText('dummy');
+    });
 
-    Object.keys(envConfig).forEach((key, index) => {
-      const value = cdk.SecretValue.unsafePlainText(envConfig[key]);
-      const secretManager = new Secret(this, `Secret${index}`, {
-        secretName: `hoyo-login${key}`,
-        secretStringValue: value,
-      });
-      secrets[key] = EcsSecret.fromSecretsManager(secretManager);
-      secretManager.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+    const secretManager = new Secret(this, 'HoyoLoginSecret', {
+      secretObjectValue,
+      secretName: 'hoyo-login-secrets',
+    });
+    secretManager.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+
+    // Create the secrets object for ECS
+    const secrets: { [key: string]: EcsSecret } = {};
+    Object.keys(envConfig).forEach((key) => {
+      secrets[key] = EcsSecret.fromSecretsManager(secretManager, key);
     });
 
     // S3

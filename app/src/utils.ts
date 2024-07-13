@@ -7,13 +7,18 @@ import {
   PutObjectCommandInput,
   GetObjectCommandInput,
 } from '@aws-sdk/client-s3';
-import { STATE_FILE_NAME, STORAGE_STATE_PATH } from './constant';
+import {
+  AWS_ACCESS_KEY_ID,
+  AWS_SECRET_ACCESS_KEY,
+  STATE_FILE_NAME,
+  STORAGE_STATE_PATH,
+} from './constant';
 
 const credentials =
-  process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY
+  AWS_ACCESS_KEY_ID && AWS_SECRET_ACCESS_KEY
     ? {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: AWS_ACCESS_KEY_ID,
+        secretAccessKey: AWS_SECRET_ACCESS_KEY,
       }
     : undefined;
 
