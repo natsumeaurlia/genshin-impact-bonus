@@ -62,7 +62,6 @@ export const setUpGoogleAuthenticate = async (
   await page.waitForTimeout(5000);
   await page.screenshot({ path: AUTH_IMAGE });
   await lineNotify('Google認証に遷移しました', AUTH_IMAGE);
-  await page.pause();
 
   // ログインできてるなら終わる
   if (page.url().includes(GOOGLE_AUTHENTICATED_DOMAIN)) {

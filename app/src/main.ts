@@ -9,7 +9,7 @@ import { accessGenshinImpactDailyAndClaimReward } from './mihoyo';
     const stateExist = await checkFileExists(STORAGE_STATE_PATH);
 
     // firefoxを起動(chromiumだとgoogle認証でセキュリティに引っかかる)
-    const browser = await firefox.launch({ headless: false });
+    const browser = await firefox.launch({ headless: true });
     const context = await browser.newContext({
       locale: 'ja',
       storageState: stateExist ? STORAGE_STATE_PATH : undefined,
