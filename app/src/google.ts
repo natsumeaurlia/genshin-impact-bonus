@@ -11,6 +11,7 @@ import {
 import { lineNotify } from './line-notify';
 
 const AUTH_IMAGE = path.join(SCREEN_SHOT_PATH, 'auth.png');
+const AUTH_WAIT_IMAGE = path.join(SCREEN_SHOT_PATH, 'auth_wait.png');
 const INPUT_EMAIL_IMAGE = path.join(SCREEN_SHOT_PATH, 'email.png');
 const INPUT_PASSWORD_IMAGE = path.join(SCREEN_SHOT_PATH, 'password.png');
 const LOGED_IN_IMAGE = path.join(SCREEN_SHOT_PATH, 'login.png');
@@ -44,7 +45,15 @@ async function selectAccount(page: Page) {
 
 async function waitForAuthentication(page: Page) {
   // 数秒待つ
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(5000);
+
+  // デバイスの確認が出る場合があるのでline通知する
+  await page.screenshot({ path: AUTH_WAIT_IMAGE });
+  await lineNotify('認証待ちです', AUTH_IMAGE);
+
+  // デバイスの確認が出る場合があるので60秒待つ
+  await page.waitForTimeout(60000);
+
   // 画面が操作できるようになるまで待つ
   await page.waitForLoadState();
   await page.goto(GOOGLE_AUTHENTICATE_URL, { timeout: 300000 });
