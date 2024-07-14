@@ -16,6 +16,8 @@ const INPUT_PASSWORD_IMAGE = path.join(SCREEN_SHOT_PATH, 'password.png');
 const LOGED_IN_IMAGE = path.join(SCREEN_SHOT_PATH, 'login.png');
 
 async function inputEmail(page: Page) {
+  // メールアドレス入力画面が出るまで待つ
+  await page.waitForSelector('input[type="email"]');
   await page.fill('input[type="email"]', GOOGLE_EMAIL);
 
   await page.screenshot({ path: INPUT_EMAIL_IMAGE });
@@ -24,8 +26,8 @@ async function inputEmail(page: Page) {
 }
 
 async function inputPassword(page: Page) {
+  // パスワード入力画面が出るまで待つ
   await page.waitForSelector('input[type="password"]');
-  console.info(GOOGLE_PASS);
   await page.fill('input[type="password"]', GOOGLE_PASS);
 
   await page.screenshot({ path: INPUT_PASSWORD_IMAGE });
@@ -41,9 +43,11 @@ async function selectAccount(page: Page) {
 }
 
 async function waitForAuthentication(page: Page) {
-  // GOOGLE_AUTHENTICATED_DOMAINで移動して、リダイレクトされずに画面表示されていたらログイン完了
+  // 数秒待つ
+  await page.waitForTimeout(3000);
+  // 画面が操作できるようになるまで待つ
+  await page.waitForLoadState();
   await page.goto(GOOGLE_AUTHENTICATE_URL, { timeout: 300000 });
-  await page.waitForTimeout(5000); // 画面遷移待ち
   await page.waitForURL((url) =>
     url.toString().includes(GOOGLE_AUTHENTICATED_DOMAIN)
   );
@@ -84,6 +88,7 @@ export const setUpGoogleAuthenticate = async (
   } else {
     await inputEmail(page);
   }
+  await page.waitForTimeout(3000); // 画面遷移待ち
   await inputPassword(page);
   await waitForAuthentication(page);
 
