@@ -52,7 +52,7 @@ async function waitForAuthentication(page: Page) {
   await lineNotify('認証待ちです', AUTH_IMAGE);
 
   // デバイスの確認が出る
-  for (let i = 0; i < 6; i += 1) {
+  for (let i = 0; i < 60; i += 1) {
     await page.screenshot({ path: AUTH_WAIT_IMAGE });
     await lineNotify(`認証待ちです (${i + 1}/6)`, AUTH_WAIT_IMAGE);
     await page.waitForTimeout(10000); // 10秒待つ
