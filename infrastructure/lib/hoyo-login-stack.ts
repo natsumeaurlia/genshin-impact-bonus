@@ -194,12 +194,12 @@ export class HoyoLoginStack extends cdk.Stack {
       assignPublicIp: true,
     });
 
-    ecsRunTask.addRetry({
-      maxAttempts: 3,
-      interval: cdk.Duration.seconds(10),
-      backoffRate: 2.0, // リトライ間隔の増加率
-      errors: ['States.ALL'], // すべてのエラーでリトライを行います
-    });
+    // ecsRunTask.addRetry({
+    //   maxAttempts: 2,
+    //   interval: cdk.Duration.seconds(10),
+    //   backoffRate: 2.0, // リトライ間隔の増加率
+    //   errors: ['States.ALL'], // すべてのエラーでリトライを行います
+    // });
 
     // Step Functions の State Machine を定義
     const stateMachine = new StateMachine(this, 'StateMachine', {
@@ -216,7 +216,7 @@ export class HoyoLoginStack extends cdk.Stack {
     new Rule(this, 'ScheduleRule', {
       schedule: Schedule.cron({
         minute: '0',
-        hour: '0',
+        hour: '3',
       }),
       targets: [new SfnStateMachine(stateMachine)],
     });
