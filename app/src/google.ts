@@ -51,8 +51,19 @@ async function waitForAuthentication(page: Page) {
   await page.screenshot({ path: AUTH_WAIT_IMAGE });
   await lineNotify('認証待ちです', AUTH_IMAGE);
 
-  // デバイスの確認が出る場合があるので60秒待つ
-  await page.waitForTimeout(60000);
+  // デバイスの確認が出る
+  for (let i = 0; i < 6; i += 1) {
+    await page.screenshot({ path: AUTH_WAIT_IMAGE });
+    await lineNotify(`認証待ちです (${i + 1}/6)`, AUTH_WAIT_IMAGE);
+    await page.waitForTimeout(10000); // 10秒待つ
+
+    // URLがGOOGLE_AUTHENTICATED_DOMAINを含む場合、ループを抜ける
+    if (page.url().includes(GOOGLE_AUTHENTICATED_DOMAIN)) {
+      await page.screenshot({ path: LOGED_IN_IMAGE });
+      await lineNotify('ログインしました', LOGED_IN_IMAGE);
+      return;
+    }
+  }
 
   // 画面が操作できるようになるまで待つ
   await page.waitForLoadState();
